@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/batch
+       http://www.springframework.org/schema/batch/spring-batch-2.2.xsd
+       ">
+    <batch:job id="cleanPromotionExto2mJob" restartable="true">
+        <batch:step id="cleanPromotionExto2mReader.step_1" allow-start-if-complete="true" next="cleanPromotionExto2mReader.step_2">
+            <batch:tasklet transaction-manager="customer.mysql.transactionManager">
+                <batch:chunk reader="cleanPromotionExto2mItemReader"
+                             processor="com.ziroom.sms.hades.clean.process.UserOrderCouponProcessor"
+                             writer="cleanCustomerPromotionExto2mItemWriter"
+                             commit-interval="100"/>
+            </batch:tasklet>
+        </batch:step>
+        <batch:step id="cleanPromotionExto2mReader.step_2" allow-start-if-complete="true">
+            <batch:tasklet transaction-manager="ziroom.mysql.transactionManager">
+                <batch:chunk reader="cleanPromotionExto2mItemReader"
+                             processor="com.ziroom.sms.hades.clean.process.ZiroomOrderCouponProcessor"
+                             writer="cleanZiroomPromotionExto2mItemWriter"
+                             commit-interval="100"/>
+            </batch:tasklet>
+        </batch:step>
+    </batch:job>
+
+    <bean id="reader"  class="org.springframework.batch.item.adapter.ItemReaderAdapter" />
+    <batch:job id="job1" restartable="false"  >
+        <batch:step id="step1" allow-start-if-complete="true" >
+            <batch:tasklet transaction-manager=""    >
+                <batch:chunk  reader="" processor="" writer="" />
+            </batch:tasklet>
+        </batch:step>
+        <batch:listeners >
+            <batch:listener ref="" after-job-method="" ></batch:listener>
+        </batch:listeners>
+        <batch:validator ref="" />
+    </batch:job>
+    <batch:job-repository
+</beans>
